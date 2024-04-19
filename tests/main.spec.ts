@@ -1,8 +1,12 @@
 import { test } from '../fixtures/baseFixture';
 import { expect } from '@playwright/test';
-const divideTestData: { title: string; numbersArray: [number, number]; result: string }[] = [
-    { title: 'Divide Test', numbersArray: [2, 2], result: '1' },
-    { title: 'Division by Zero Test', numbersArray: [2, 0], result: 'Not a Number' }
+
+const testData: { title: string; operation: 'Sum' | 'Divide' | 'Multiply' | 'Subtract'; numbersArray: [number, number]; result: string }[] = [
+    { title: 'Verify the calculator can accurately sum two numbers', operation: 'Sum', numbersArray: [2, 2], result: '4' },
+    { title: 'Ensure the calculator can accurately subtract one number from another', operation: 'Subtract', numbersArray: [2, 2], result: '0' },
+    { title: 'Multiply Test', operation: 'Multiply', numbersArray: [2, 2], result: '4' },
+    { title: 'Divide Test', operation: 'Divide', numbersArray: [2, 2], result: '1' },
+    { title: 'Division by Zero Test', operation: 'Divide', numbersArray: [2, 0], result: 'Not a Number' }
 ];
 
 test.beforeEach(async ({ calculatorPage }) => {
@@ -31,24 +35,10 @@ test('Ensure that using the full reset clears all previous calculations complete
     expect(await calculatorPage.getAnswerValue()).not.toContain('6');
 });
 
-test('Verify the calculator can accurately sum two numbers', async ({ calculatorPage }) => {
-    await calculatorPage.logicOperation({ numbers: [2, 2], operation: 'Sum' });
-    expect(await calculatorPage.getAnswerValue()).toContain('4');
-});
-
-test('Ensure the calculator can accurately subtract one number from another', async ({ calculatorPage }) => {
-    await calculatorPage.logicOperation({ numbers: [2, 2], operation: 'Subtract' });
-    expect(await calculatorPage.getAnswerValue()).toContain('0');
-});
-
-test('Multiply Test', async ({ calculatorPage }) => {
-    await calculatorPage.logicOperation({ numbers: [2, 2], operation: 'Multiply' });
-    expect(await calculatorPage.getAnswerValue()).toContain('4');
-});
-
-for (const { numbersArray, title, result } of divideTestData) {
+for (const { title, operation, numbersArray, result } of testData) {
     test(`${title}`, async ({ calculatorPage }) => {
-        await calculatorPage.logicOperation({ numbers: numbersArray, operation: 'Divide' });
+        await calculatorPage.logicOperation({ numbers: numbersArray, operation: operation });
         expect(await calculatorPage.getAnswerValue()).toContain(result);
     });
 }
+
